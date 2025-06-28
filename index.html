@@ -1,173 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Extreme Demon Roulette</title>
 <style>
   body {
-    background-color: #1c1e1f;
-    color: #eaeaea;
-    font-family: "Segoe UI", sans-serif;
+    background-color: #121212;
+    color: #eee;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px 40px;
   }
 
-  .title {
-    text-align: center;
-    font-size: 28px;
-    margin-bottom: 20px;
-    border-bottom: 1px dashed #aaa;
-    display: inline-block;
-  }
-
+  /* Filters on left stacked */
   .filters {
     display: flex;
-    gap: 16px;
-    padding: 10px 20px;
-    font-size: 16px;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    user-select: none;
   }
-
   .filters label {
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-
-  .btn-group {
-    text-align: right;
-    padding: 0 20px;
-    margin-top: -40px;
-  }
-
-  .btn {
-    padding: 6px 16px;
-    font-size: 16px;
-    border: none;
-    border-radius: 6px;
-    color: white;
     cursor: pointer;
-    margin-left: 10px;
+  }
+  .filters input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
   }
 
-  .btn.save {
-    background-color: #3b82f6;
-  }
-
-  .btn.restart {
-    background-color: #ef4444;
-  }
-
-  .card {
+  /* Header container with filters and header aligned horizontally */
+  .top-container {
     display: flex;
-    background-color: #252728;
-    margin: 20px auto;
-    padding: 16px;
-    border-radius: 8px;
-    width: 80%;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    gap: 60px;
+    align-items: flex-start;
+    max-width: 900px;
+    margin-bottom: 10px;
+  }
+
+  /* Header with flexbox */
+  header {
+    flex-grow: 1;
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: background-color 0.3s ease;
+    border-bottom: 2px dotted #888;
+    padding-bottom: 6px;
   }
 
+  /* Left flex item to balance buttons, invisible but takes space */
+  .header-left-space {
+    width: 140px; /* same width as button group */
+    flex-shrink: 0;
+  }
+
+  /* Title centered inside its container */
+  .title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #ddd;
+    text-align: center;
+    flex-grow: 1;
+    user-select: none;
+  }
+
+  /* Buttons container */
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    width: 140px; /* fixed width */
+    flex-shrink: 0;
+  }
+  .btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    color: white;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn.save {
+    background-color: #2978f0;
+  }
+  .btn.save:hover {
+    background-color: #4a9bff;
+  }
+  .btn.restart {
+    background-color: #d43838;
+  }
+  .btn.restart:hover {
+    background-color: #f05050;
+  }
+
+  /* Card container */
+  #cardContainer {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Card style */
+  .card {
+    display: flex;
+    align-items: center;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    padding: 20px 24px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+  }
+  .card.done {
+    background-color: #1e3d27;
+  }
+  .card.failed {
+    background-color: #3d1e1e;
+  }
+
+  /* Image on left */
   .card img {
-    width: 220px;
-    height: 120px;
+    width: 160px;
+    height: 90px;
+    border-radius: 6px;
     object-fit: cover;
-    border-radius: 4px;
-    margin-right: 20px;
+    margin-right: 28px;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(0,0,0,0.6);
   }
 
+  /* Info middle */
   .card-info {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-
   .card-title {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #eee;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-
+  .card-title .copy-icon {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    font-size: 0.9rem;
+  }
+  .card-title .copy-icon:hover {
+    opacity: 1;
+  }
   .card-sub {
     font-style: italic;
-    margin-top: 4px;
-    color: #c0c0c0;
+    color: #bbb;
   }
 
+  /* Controls right */
   .controls {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 10px;
+    gap: 12px;
+    min-width: 140px;
+    margin-left: auto;
   }
-
   .controls input {
-    background: #1c1e1f;
-    border: 1px solid #444;
-    border-radius: 6px;
-    padding: 6px;
-    color: white;
     width: 140px;
-    text-align: center;
+    padding: 8px 10px;
     font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #121212;
+    color: #eee;
+    text-align: center;
+    outline-offset: 2px;
   }
-
+  .controls input:disabled {
+    background-color: #2b2b2b;
+    color: #888;
+  }
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
   .controls .done,
   .controls .giveup {
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
+    flex: 1;
+    padding: 8px 0;
+    font-weight: 600;
     border-radius: 6px;
-    color: white;
     cursor: pointer;
+    border: none;
+    color: white;
+    user-select: none;
+    text-align: center;
   }
-
   .controls .done {
     background-color: #10b981;
   }
-
+  .controls .done:hover:not(:disabled) {
+    background-color: #12d78f;
+  }
   .controls .giveup {
     background-color: #ef4444;
   }
-
-  .card.done {
-    background-color: #1c3528;
+  .controls .giveup:hover:not(:disabled) {
+    background-color: #f66b6b;
   }
-
-  .card.failed {
-    background-color: #3a1c1c;
-  }
-
   .controls.disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     pointer-events: none;
   }
 </style>
+</head>
+<body>
 
-<div class="filters">
-  <label><input type="checkbox" checked> Main list</label>
-  <label><input type="checkbox" checked> Extended list</label>
-  <label><input type="checkbox"> Legacy list</label>
-</div>
+<div class="top-container">
+  <div class="filters" aria-label="Level list filters">
+    <label><input type="checkbox" checked /> Main list</label>
+    <label><input type="checkbox" checked /> Extended list</label>
+    <label><input type="checkbox" /> Legacy list</label>
+  </div>
 
-<h2 class="title">Extreme Demon Roulette</h2>
-
-<div class="btn-group">
-  <button class="btn save" onclick="saveProgress()">Save</button>
-  <button class="btn restart" onclick="resetRoulette()">Restart</button>
+  <header>
+    <div class="header-left-space"></div>
+    <h2 class="title" tabindex="0">Extreme Demon Roulette</h2>
+    <div class="btn-group">
+      <button class="btn save" onclick="saveProgress()">Save</button>
+      <button class="btn restart" onclick="resetRoulette()">Restart</button>
+    </div>
+  </header>
 </div>
 
 <div id="cardContainer"></div>
 
-<button class="btn save" style="margin: 20px;" onclick="generateCard()">Generate</button>
+<div style="max-width: 900px; margin: 20px auto; text-align: right;">
+  <button class="btn save" onclick="generateCard()">Generate</button>
+</div>
 
 <script>
   const used = [];
   const levels = {
     41: {
       title: "#41 - SARYYX NEVER CLEAR",
-      author: "by artos",
+      author: "artos",
       img: "https://drive.google.com/uc?export=view&id=1rAa3LwZdD_L8W1YQXKJ1aJS1DcmcbZz9"
+    },
+    42: {
+      title: "#42 - NEW EXTREME DEMON",
+      author: "creator",
+      img: "https://via.placeholder.com/160x90?text=Level+42"
     }
-    // Add more levels as needed...
+    // Add more levels here...
   };
 
   function generateCard() {
     let keys = Object.keys(levels).map(n => parseInt(n));
     let available = keys.filter(k => !used.includes(k));
-    if (available.length === 0) return;
+    if (available.length === 0) {
+      alert("No more levels available to generate.");
+      return;
+    }
 
     let pick = available[Math.floor(Math.random() * available.length)];
     used.push(pick);
@@ -180,11 +285,33 @@
 
     const img = document.createElement("img");
     img.src = level.img;
+    img.alt = `Thumbnail for ${level.title}`;
     card.appendChild(img);
 
     const info = document.createElement("div");
     info.className = "card-info";
-    info.innerHTML = `<div class="card-title">${level.title}</div><div class="card-sub">${level.author}</div>`;
+
+    const copyIcon = document.createElement("span");
+    copyIcon.textContent = "📋";
+    copyIcon.title = "Copy level title";
+    copyIcon.className = "copy-icon";
+    copyIcon.onclick = () => {
+      navigator.clipboard.writeText(level.title).then(() => {
+        alert("Level title copied!");
+      });
+    };
+
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "card-title";
+    titleDiv.appendChild(document.createTextNode(level.title));
+    titleDiv.appendChild(copyIcon);
+    info.appendChild(titleDiv);
+
+    const authorDiv = document.createElement("div");
+    authorDiv.className = "card-sub";
+    authorDiv.textContent = `by ${level.author}`;
+    info.appendChild(authorDiv);
+
     card.appendChild(info);
 
     const controls = document.createElement("div");
@@ -193,13 +320,26 @@
     const input = document.createElement("input");
     input.placeholder = "At least 1%";
 
+    const btnRow = document.createElement("div");
+    btnRow.className = "btn-row";
+
     const done = document.createElement("button");
     done.className = "done";
     done.textContent = "Done";
     done.onclick = () => {
+      const val = input.value.trim();
+      const num = parseFloat(val);
+
+      if (!val || isNaN(num) || num < 1) {
+        alert("Please enter a percentage of at least 1% before marking as done.");
+        return;
+      }
+
       card.classList.add("done");
       controls.classList.add("disabled");
       input.disabled = true;
+      done.disabled = true;
+      giveup.disabled = true;
     };
 
     const giveup = document.createElement("button");
@@ -209,22 +349,29 @@
       card.classList.add("failed");
       controls.classList.add("disabled");
       input.disabled = true;
+      done.disabled = true;
+      giveup.disabled = true;
     };
 
+    btnRow.appendChild(done);
+    btnRow.appendChild(giveup);
     controls.appendChild(input);
-    controls.appendChild(done);
-    controls.appendChild(giveup);
+    controls.appendChild(btnRow);
 
     card.appendChild(controls);
+
     container.appendChild(card);
   }
 
-  function resetRoulette() {
-    document.getElementById("cardContainer").innerHTML = "";
-    used.length = 0;
+  function saveProgress() {
+    alert("Save functionality not implemented.");
   }
 
-  function saveProgress() {
-    alert("Saving not implemented yet.");
+  function resetRoulette() {
+    const container = document.getElementById("cardContainer");
+    container.innerHTML = "";
+    used.length = 0;
   }
 </script>
+</body>
+</html>
