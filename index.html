@@ -63,6 +63,147 @@
   text-align: center;
 }
 
+
+/* Improved Mobile Responsiveness */
+
+/* Make the entire container padding smaller on small screens */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+    margin: 20px auto;
+  }
+  
+  /* Header layout stack vertically */
+  .header {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  /* Filters become horizontal row with wrapping */
+  .filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    font-size: 13px;
+  }
+  .filters label {
+    font-size: 13px;
+  }
+  .filters input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Title is centered with bigger font */
+  .title {
+    position: static;
+    transform: none;
+    font-size: 1.5rem;
+    text-align: center;
+    order: 2;
+    width: 100%;
+  }
+  
+  /* Buttons full width with margin */
+  .buttons {
+    width: 100%;
+    gap: 8px;
+    order: 3;
+    flex-wrap: nowrap;
+  }
+  .buttons button {
+    flex-grow: 1;
+    min-width: unset;
+    max-width: none;
+    font-size: 16px;
+    padding: 12px 0;
+  }
+  
+  /* Card styling adjustments */
+  .card {
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+  }
+  .card img {
+    max-width: 100%;
+    border-radius: 6px;
+  }
+  .card-info {
+    width: 100%;
+  }
+  
+  /* Input controls full width */
+  .controls input {
+    max-width: 100%;
+    font-size: 15px;
+    padding: 10px;
+  }
+  
+  /* Buttons inside card bigger and full width */
+  .btn-row {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .btn-row button {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 0;
+  }
+  
+  /* Final result card wider and text bigger */
+  #finalResultCard {
+    max-width: 90vw;
+    padding: 24px 20px;
+    font-size: 1rem;
+  }
+  #finalResultCard h2 {
+    font-size: 1.4rem;
+  }
+  #finalResultCard p {
+    font-size: 1rem;
+  }
+  
+  /* Modal styling full screen with padding */
+  .modal-content {
+    max-width: 95vw;
+    padding: 20px;
+  }
+  
+  /* Increase modal buttons padding and font size */
+  .modal-buttons button {
+    font-size: 15px;
+    padding: 12px 0;
+    min-width: unset;
+  }
+}
+
+
+/* Prevent horizontal scrolling */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* hides horizontal scrollbar */
+  max-width: 100vw;   /* viewport width */
+}
+
+/* Make sure container or main wrapper fits the screen */
+.container {
+  max-width: 100%;
+  box-sizing: border-box; /* include padding/border in width */
+  padding: 10px;
+}
+
+/* Responsive buttons and elements */
+button, input, select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 #finalResultCard h2 {
   margin-bottom: 10px;
   font-weight: 600;
