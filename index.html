@@ -50,7 +50,15 @@
     #saveBtn { background: var(--button-bg-save); color: var(--button-text); padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; }
     #startBtn { background: var(--button-bg-start); color: var(--button-text); padding: 10px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.2s ease; }
     #startBtn.restart { background: var(--button-bg-restart); }
-    #cardContainer { margin-top: 40px; display: flex; flex-direction: column; gap: 28px; }
+#cardContainer {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 0 16px;
+}
 #finalResultCard {
   background-color: #1e1e1e;
   color: #eee;
@@ -169,10 +177,19 @@
   }
   
   /* Modal styling full screen with padding */
-  .modal-content {
-    max-width: 95vw;
-    padding: 20px;
-  }
+.modal-content {
+  background: var(--modal-bg);
+  padding: 24px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 95vw;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+  margin: 0 16px;
+}
+
   
   /* Increase modal buttons padding and font size */
   .modal-buttons button {
@@ -241,14 +258,13 @@ button, input, select {
 }
 
 #remainingDemonsOutside {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;          /* same gap as normal cards */
-  padding: 0;
-  width: 100%;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 0 16px;
 }
 
 #remainingDemonsOutside .card {
@@ -270,7 +286,7 @@ button, input, select {
       100% { transform: scale(1); }
     }
     .card.pulse { animation: pulse 0.3s ease; }
-    .card { background: var(--card-bg); display: flex; border-radius: 8px; padding: 20px 24px; box-shadow: 0 0 8px rgba(0,0,0,0.6); align-items: center; gap: 28px; }
+    .card { background: var(--card-bg); display: flex; border-radius: 8px; padding: 20px 24px; box-shadow: 0 0 8px rgba(0,0,0,0.6); align-items: center; gap: 28px; width: 100%; max-width: 900px; box-sizing: border-box; margin-top: 20px; }
     .card img { width: 160px; height: 90px; object-fit: cover; border-radius: 6px; }
     .card-info { flex-grow: 1; }
     .card-info h2 { margin: 0 0 6px 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
@@ -310,7 +326,7 @@ button, input, select {
     .modal-buttons .confirm { background: var(--button-bg-restart); }
     .modal-buttons .cancel { background: #555; }
     @media (max-width: 700px) {
-      .title { position: static; transform: none; order: 2; font-size: 1.6rem; text-align: center; }
+      .title { cursor: pointer; position: static; transform: none; order: 2; font-size: 1.6rem; text-align: center; }
       .filters { order: 1; width: 100%; align-items: center; }
       .buttons { order: 3; justify-content: center; width: 100%; }
       .controls { min-width: auto; width: 100%; flex-direction: row; justify-content: center; }
@@ -427,6 +443,66 @@ Heavily inspired by Extreme Demon Roulette, website by normalpersonGD :)</p>
     id: "1717",
     author: "DomVkusYEPTA",
     img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Cry%20I.png"
+  },
+  11: {
+    title: "Stereo Extreme",
+    id: "1447",
+    author: "ElisSk",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Stereo%20Extreme.png"
+  },
+  12: {
+    title: "Claustrophobia",
+    id: "1250",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Claustrophobia.png"
+  },
+  13: {
+    title: "CradpesX",
+    id: "1543",
+    author: "DomVkusYEPTA",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/CradpesX.png"
+  },
+  14: {
+    title: "Raganarok",
+    id: "1024",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Raganarok.png"
+  },
+  15: {
+    title: "Lunar Abyss",
+    id: "1400",
+    author: "PashaNanix",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Lunar%20Abyss.png"
+  },  
+  16: {
+    title: "Sonic Planet",
+    id: "1767",
+    author: "normalpersonGD",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Sonic%20Planet.png"
+  },
+  17: {
+    title: "Hydrocid",
+    id: "1392",
+    author: "PashaNanix",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Hydrocid.png"
+  },
+  18: {
+    title: "Crazy Circles",
+    id: "1035",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Crazy%20Circles.png"
+  },
+  19: {
+    title: "Kaban",
+    id: "1464",
+    author: "Kimech",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Kaban.png"
+  },
+  20: {
+    title: "Yepta Level",
+    id: "1493",
+    author: "LordOfTheYEPTA",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Yepta%20Level.png"
   },
 };
   const used = [];
