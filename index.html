@@ -1,377 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Extreme Demon Roulette</title>
-<style>
-  body {
-    background-color: #121212;
-    color: #eee;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 20px 40px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GMDGDPS Demon Roulette</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #ddd;
+      --card-bg: #1f1f1f;
+      --modal-bg: #222;
+      --button-bg-start: #10b981;
+      --button-bg-restart: #ef4444;
+      --button-bg-save: #3b82f6;
+      --button-text: #fff;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.light-theme {
+      --bg-color: #fff;
+      --text-color: #000;
+      --card-bg: #f0f0f0;
+      --modal-bg: #fff;
+    }
+    * { box-sizing: border-box; }
+    .container { max-width: 900px; margin: 32px auto; padding: 0 16px; }
+    .header { display: flex; align-items: center; justify-content: space-between; position: relative; flex-wrap: wrap; gap: 12px; }
+    .filters { display: flex; flex-direction: column; gap: 8px; font-size: 14px; flex-shrink: 0; }
+    .filters label { cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .filters input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+    .title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: 900;
+      font-size: 1.8rem;
+      cursor: pointer;
+      text-decoration: underline dotted;
+      pointer-events: auto;
+    }
+    .buttons { display: flex; gap: 12px; flex-shrink: 0; }
+    button { font-family: inherit; }
+    #saveBtn { background: var(--button-bg-save); color: var(--button-text); padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; }
+    #startBtn { background: var(--button-bg-start); color: var(--button-text); padding: 10px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.2s ease; }
+    #startBtn.restart { background: var(--button-bg-restart); }
+    #cardContainer { margin-top: 40px; display: flex; flex-direction: column; gap: 28px; }
+#finalResultCard {
+  background-color: #1e1e1e;
+  color: #eee;
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 20px 25px;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 0 10px rgba(0,0,0,0.7);
+  text-align: center;
+}
 
-  /* Filters on left stacked */
-  .filters {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 14px;
-    margin-bottom: 20px;
-    user-select: none;
-  }
-  .filters label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-  .filters input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-  }
+#finalResultCard h2 {
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
 
-  /* Header container with filters and header aligned horizontally */
-  .top-container {
-    display: flex;
-    gap: 60px;
-    align-items: flex-start;
-    max-width: 900px;
-    margin-bottom: 10px;
-  }
+#finalResultCard p {
+  margin: 5px 0;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #ccc;
+}
 
-  /* Header with flexbox */
-  header {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 2px dotted #888;
-    padding-bottom: 6px;
+@keyframes fadeScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
   }
-
-  /* Left flex item to balance buttons, invisible but takes space */
-  .header-left-space {
-    width: 140px; /* same width as button group */
-    flex-shrink: 0;
-  }
-
-  /* Title centered inside its container */
-  .title {
-    font-weight: 700;
-    font-size: 1.8rem;
-    color: #ddd;
-    text-align: center;
-    flex-grow: 1;
-    user-select: none;
-  }
-
-  /* Buttons container */
-  .btn-group {
-    display: flex;
-    gap: 12px;
-    width: 140px; /* fixed width */
-    flex-shrink: 0;
-  }
-  .btn {
-    padding: 8px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-    color: white;
-    transition: background-color 0.2s ease;
-    white-space: nowrap;
-  }
-  .btn.save {
-    background-color: #2978f0;
-  }
-  .btn.save:hover {
-    background-color: #4a9bff;
-  }
-  .btn.restart {
-    background-color: #d43838;
-  }
-  .btn.restart:hover {
-    background-color: #f05050;
-  }
-
-  /* Card container */
-  #cardContainer {
-    max-width: 900px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  /* Card style */
-  .card {
-    display: flex;
-    align-items: center;
-    background-color: #1f1f1f;
-    border-radius: 8px;
-    padding: 20px 24px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.5);
-  }
-  .card.done {
-    background-color: #1e3d27;
-  }
-  .card.failed {
-    background-color: #3d1e1e;
-  }
-
-  /* Image on left */
-  .card img {
-    width: 160px;
-    height: 90px;
-    border-radius: 6px;
-    object-fit: cover;
-    margin-right: 28px;
-    flex-shrink: 0;
-    box-shadow: 0 0 6px rgba(0,0,0,0.6);
-  }
-
-  /* Info middle */
-  .card-info {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .card-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #eee;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .card-title .copy-icon {
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-    font-size: 0.9rem;
-  }
-  .card-title .copy-icon:hover {
+  100% {
     opacity: 1;
+    transform: scale(1);
   }
-  .card-sub {
-    font-style: italic;
-    color: #bbb;
-  }
+}
 
-  /* Controls right */
-  .controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-    min-width: 140px;
-    margin-left: auto;
-  }
-  .controls input {
-    width: 140px;
-    padding: 8px 10px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: 1px solid #444;
-    background-color: #121212;
-    color: #eee;
-    text-align: center;
-    outline-offset: 2px;
-  }
-  .controls input:disabled {
-    background-color: #2b2b2b;
-    color: #888;
-  }
-  .btn-row {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-  }
-  .controls .done,
-  .controls .giveup {
-    flex: 1;
-    padding: 8px 0;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    border: none;
-    color: white;
-    user-select: none;
-    text-align: center;
-  }
-  .controls .done {
-    background-color: #10b981;
-  }
-  .controls .done:hover:not(:disabled) {
-    background-color: #12d78f;
-  }
-  .controls .giveup {
-    background-color: #ef4444;
-  }
-  .controls .giveup:hover:not(:disabled) {
-    background-color: #f66b6b;
-  }
-  .controls.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-</style>
+#finalResultCard {
+  display: none;
+  opacity: 0;
+  transform: scale(0.8);
+  animation-fill-mode: forwards;
+}
+
+#finalResultCard.show {
+  display: block;
+  animation: fadeScaleIn 0.4s ease forwards;
+}
+
+#remainingDemonsOutside {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;          /* same gap as normal cards */
+  padding: 0;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#remainingDemonsOutside .card {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+
+
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card.enter { animation: fadeInUp 0.5s ease; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .card.pulse { animation: pulse 0.3s ease; }
+    .card { background: var(--card-bg); display: flex; border-radius: 8px; padding: 20px 24px; box-shadow: 0 0 8px rgba(0,0,0,0.6); align-items: center; gap: 28px; }
+    .card img { width: 160px; height: 90px; object-fit: cover; border-radius: 6px; }
+    .card-info { flex-grow: 1; }
+    .card-info h2 { margin: 0 0 6px 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    .copy-icon { cursor: pointer; opacity: 0.5; }
+    .card-info p { margin: 0; font-style: italic; color: #bbb; }
+    .controls { display: flex; flex-direction: column; gap: 12px; min-width: 160px; }
+    .controls input { width: 160px; padding: 8px 12px; font-size: 14px; border-radius: 6px; border: 1px solid #444; background: var(--bg-color); color: var(--text-color); text-align: center; }
+    .btn-row { display: flex; gap: 12px; }
+    .btn-row button { flex: 1; padding: 10px 0; border-radius: 6px; font-weight: 700; font-size: 14px; border: none; color: var(--button-text); cursor: pointer; transition: background-color 0.2s ease; }
+    .btn-row .done { background: var(--button-bg-start); }
+    .btn-row .giveup { background: var(--button-bg-restart); }
+    .disabled { opacity: 0.5; pointer-events: none; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .modal-content {
+      background: var(--modal-bg);
+      padding: 24px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 300px;
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+    .modal-content h3 { margin-bottom: 16px; }
+    .modal-content p { white-space: pre-wrap; text-align: left; }
+    .theme-toggle { margin: 12px 0; display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
+    .modal-buttons { display: flex; gap: 12px; margin-top: 16px; justify-content: center; }
+    .modal-buttons button { flex: 1; padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: var(--button-text); }
+    .modal-buttons .confirm { background: var(--button-bg-restart); }
+    .modal-buttons .cancel { background: #555; }
+    @media (max-width: 700px) {
+      .title { position: static; transform: none; order: 2; font-size: 1.6rem; text-align: center; }
+      .filters { order: 1; width: 100%; align-items: center; }
+      .buttons { order: 3; justify-content: center; width: 100%; }
+      .controls { min-width: auto; width: 100%; flex-direction: row; justify-content: center; }
+      .controls input { width: 130px; }
+      .btn-row { gap: 10px; }
+    }
+  </style>
 </head>
 <body>
+<div class="modal" id="infoModal">
+  <div class="modal-content" id="infoContent">
+    <h3>About GMDGDPS Demon Roulette</h3>
+    <p>The GMDGDPS Demon Roulette is a challenge where you must go through as many demons as possible, with the challenge ending when you get 100% or give up.
 
-<div class="top-container">
-  <div class="filters" aria-label="Level list filters">
-    <label><input type="checkbox" checked /> Main list</label>
-    <label><input type="checkbox" checked /> Extended list</label>
-    <label><input type="checkbox" /> Legacy list</label>
+Heavily inspired by Extreme Demon Roulette, website by normalpersonGD :)</p>
+    <div class="theme-toggle">
+      <label><input type="checkbox" id="themeSwitch" /> Light Mode</label>
+    </div>
+    <div class="modal-buttons">
+      <button class="confirm" id="closeInfo">Close</button>
+    </div>
   </div>
-
-  <header>
-    <div class="header-left-space"></div>
-    <h2 class="title" tabindex="0">Extreme Demon Roulette</h2>
-    <div class="btn-group">
-      <button class="btn save" onclick="saveProgress()">Save</button>
-      <button class="btn restart" onclick="resetRoulette()">Restart</button>
+</div>
+<div class="modal" id="giveupModal">
+  <div class="modal-content">
+    <h3>Are you sure you want to give up?</h3>
+    <div class="modal-buttons">
+      <button class="confirm" id="confirmGiveUp">Yes</button>
+      <button class="cancel" id="cancelGiveUp">No</button>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <header class="header">
+    <div class="filters">
+      <label><input type="checkbox" checked /> Main list</label>
+      <label><input type="checkbox" checked /> Extended list</label>
+      <label><input type="checkbox" /> Legacy list</label>
+    </div>
+    <h1 class="title">GMDGDPS Demon Roulette</h1>
+    <div class="buttons">
+      <button id="saveBtn">Save</button>
+      <button id="startBtn">Start</button>
     </div>
   </header>
+  <div id="cardContainer"></div>
+<div id="finalResultCard" style="display:none;">
+  <h2>Results</h2>
+  <p>Number of demons: 0</p>
+  <p>Highest percent: 0%</p>
+  <button id="showRemainingBtn" style="display:none; background:#3b82f6; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; margin-top:15px;">Show Remaining Demons</button>
+  <div id="remainingDemonsContainer" style="margin-top:20px;"></div>
 </div>
-
-<div id="cardContainer"></div>
-
-<div style="max-width: 900px; margin: 20px auto; text-align: right;">
-  <button class="btn save" onclick="generateCard()">Generate</button>
+<div id="remainingDemonsOutside" style="margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto;"></div>
 </div>
-
 <script>
-  const used = [];
   const levels = {
-    41: {
-      title: "#41 - SARYYX NEVER CLEAR",
-      author: "artos",
-      img: "https://drive.google.com/uc?export=view&id=1rAa3LwZdD_L8W1YQXKJ1aJS1DcmcbZz9"
-    },
-    42: {
-      title: "#42 - NEW EXTREME DEMON",
-      author: "creator",
-      img: "https://via.placeholder.com/160x90?text=Level+42"
+  1: {
+    title: "4:30",
+    id: "1962",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/4:30.png"
+  },
+  2: {
+    title: "Shitty Circles",
+    id: "1337",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Shitty%20Circles.png"
+  },
+  3: {
+    title: "KEPPU",
+    id: "1776",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/KEPPU.png"
+  },
+  4: {
+    title: "SpArTa",
+    id: "1257",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/SpArTa.png"
+  },
+  5: {
+    title: "Elixir World",
+    id: "1063",
+    author: "SpeedMaxYT",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Elixir%20World.png"
+  },  
+  6: {
+    title: "Back On Track",
+    id: "1559",
+    author: "StintlerGD",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Back%20On%20Track.png"
+  },
+  7: {
+    title: "Dark Flare",
+    id: "1082",
+    author: "GMDKOMARU",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Dark%20Flare.png"
+  },
+  8: {
+    title: "Kronos I",
+    id: "1098",
+    author: "PashaNanix",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Kronos%20I.png"
+  },
+  9: {
+    title: "GNEV",
+    id: "1249",
+    author: "GMDKOMARU & GUSWAYKA",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/GNEV.png"
+  },
+  10: {
+    title: "Cry I",
+    id: "1717",
+    author: "DomVkusYEPTA",
+    img: "https://raw.githubusercontent.com/normalperson4198/GMDGDPS-Demon-roulette/main/images/Cry%20I.png"
+  },
+};
+  const used = [];
+  const cardContainer = document.getElementById("cardContainer");
+  const startBtn = document.getElementById("startBtn");
+  const saveBtn = document.getElementById("saveBtn");
+  const giveupModal = document.getElementById("giveupModal");
+  const infoModal = document.getElementById("infoModal");
+  const infoContent = document.getElementById("infoContent");
+  const confirmGiveUp = document.getElementById("confirmGiveUp");
+  const cancelGiveUp = document.getElementById("cancelGiveUp");
+  const closeInfo = document.getElementById("closeInfo");
+  const themeSwitch = document.getElementById("themeSwitch");
+  const titleEl = document.querySelector('.title');
+  let started = false;
+  let pendingGiveUpCard = null;
+  let minPercentage = 1;
+
+  // Load theme preference
+  if (localStorage.getItem('lightMode') === 'true') {
+    document.body.classList.add('light-theme');
+    themeSwitch.checked = true;
+  }
+
+  titleEl.addEventListener('click', () => { infoModal.style.display = 'flex'; });
+  closeInfo.addEventListener('click', () => { infoModal.style.display = 'none'; });
+  themeSwitch.addEventListener('change', () => {
+    const isLight = themeSwitch.checked;
+    document.body.classList.toggle('light-theme', isLight);
+    localStorage.setItem('lightMode', isLight);
+  });
+
+  function copyToClipboard(text) { navigator.clipboard.writeText(text); }
+
+  function createCard(level) {
+    const card = document.createElement("div"); card.className = "card enter";
+    setTimeout(() => card.classList.remove('enter'), 500);
+    const img = document.createElement("img"); img.src = level.img; card.appendChild(img);
+    const info = document.createElement("div"); info.className = "card-info";
+    const titleH2 = document.createElement("h2"); titleH2.textContent = level.title;
+    const copyIcon = document.createElement("span"); copyIcon.className = "copy-icon"; copyIcon.textContent = "📋";
+    copyIcon.onclick = () => copyToClipboard(level.id);
+    titleH2.appendChild(copyIcon); info.appendChild(titleH2);
+    const authorP = document.createElement("p"); authorP.textContent = `by ${level.author}`; info.appendChild(authorP);
+    card.appendChild(info);
+    const controls = document.createElement("div"); controls.className = "controls";
+    const input = document.createElement("input"); input.type = "text"; input.placeholder = `At least ${minPercentage}%`;
+    input.addEventListener("input", () => { let val = input.value.replace(/\D/g, ''); if (!val) { input.value = ''; return; } input.value = Math.min(parseInt(val, 10), 100).toString(); });
+    controls.appendChild(input);
+    const btnRow = document.createElement("div"); btnRow.className = "btn-row";
+    const doneBtn = document.createElement("button"); doneBtn.className = "done"; doneBtn.textContent = "Done";
+    const giveUpBtn = document.createElement("button"); giveUpBtn.className = "giveup"; giveUpBtn.textContent = "Give up";
+    doneBtn.onclick = () => {
+  const val = parseInt(input.value, 10);
+  if (isNaN(val) || val < minPercentage || val > 100) return;
+  card.classList.add("pulse");
+  setTimeout(() => card.classList.remove('pulse'), 300);
+  card.classList.add("done");
+  controls.classList.add("disabled");
+  input.disabled = true;
+  doneBtn.disabled = true;
+  giveUpBtn.disabled = true;
+
+  if (val === 100) {
+    showFinalCard(levels[used[used.length - 1]]);
+  } else {
+    minPercentage = val + 1;
+    generateCard();
+  }
+};
+    giveUpBtn.onclick = () => { pendingGiveUpCard={card,controls,input,doneBtn,giveUpBtn}; giveupModal.style.display="flex"; };
+    btnRow.appendChild(doneBtn); btnRow.appendChild(giveUpBtn); controls.appendChild(btnRow); card.appendChild(controls); return card;
+  }
+confirmGiveUp.onclick = () => {
+  if (pendingGiveUpCard) {
+    const { card, controls, input, doneBtn, giveUpBtn } = pendingGiveUpCard;
+    card.classList.add("failed");
+    controls.classList.add("disabled");
+    input.disabled = true;
+    doneBtn.disabled = true;
+    giveUpBtn.disabled = true;
+
+    started = false;
+    startBtn.textContent = "Start";
+    startBtn.classList.remove("restart");
+
+    const cardEl = document.getElementById("finalResultCard");
+    const showRemainingBtn = document.getElementById("showRemainingBtn");
+    const remainingDemonsContainer = document.getElementById("remainingDemonsContainer");
+
+    const highestPercent = minPercentage - 1;
+    const completedCount = used.length > 1 ? used.length - 1 : 0;
+    const lastIndex = used.length > 1 ? used[used.length - 2] : used[0];
+    const lastLevel = levels[lastIndex];
+
+    cardEl.querySelector('p:nth-of-type(1)').textContent = `Number of demons: ${completedCount}`;
+    cardEl.querySelector('p:nth-of-type(2)').textContent = `Highest percent: ${highestPercent}%`;
+
+    // Clear any previous remaining demons list
+    remainingDemonsContainer.innerHTML = "";
+
+    // ✅ Show the "Show Remaining Demons" button
+    showRemainingBtn.style.display = "inline-block";
+
+    // ✅ Show final result card with animation
+    cardEl.style.display = "block";
+    cardEl.classList.remove("show");
+    void cardEl.offsetWidth;
+    cardEl.classList.add("show");
+  }
+
+  giveupModal.style.display = "none";
+  pendingGiveUpCard = null;
+};
+
+
+  cancelGiveUp.onclick = () => { giveupModal.style.display="none"; pendingGiveUpCard=null; };
+  function generateCard(){const keys=Object.keys(levels).map(Number);const available=keys.filter(k=>!used.includes(k));if(!available.length)return;const chosen=available[Math.floor(Math.random()*available.length)];used.push(chosen);const card=createCard(levels[chosen]);cardContainer.appendChild(card);} 
+startBtn.onclick = () => {
+  if (!started) {
+    showRemainingBtn.disabled = false;
+    // Reset everything to initial state:
+    used.length = 0;
+    cardContainer.innerHTML = '';
+    minPercentage = 1;
+    started = true;
+
+    startBtn.textContent = "Restart";
+    startBtn.classList.add("restart");
+
+    // Hide final result card and reset animation:
+    const finalCard = document.getElementById("finalResultCard");
+    finalCard.style.display = "none";
+    finalCard.classList.remove("show");
+
+    // Hide "Show Remaining Demons" button:
+    showRemainingBtn.style.display = "none";
+
+    // Clear remaining demons containers:
+    remainingDemonsContainer.innerHTML = "";
+    remainingDemonsContainer.style.display = "block"; // reset display
+    document.getElementById("remainingDemonsOutside").innerHTML = "";
+
+    generateCard();
+  } else {
+    showRemainingBtn.disabled = false;
+    // Restart path — basically the same cleanup as above:
+    used.length = 0;
+    cardContainer.innerHTML = '';
+    minPercentage = 1;
+
+    const finalCard = document.getElementById("finalResultCard");
+    finalCard.style.display = "none";
+    finalCard.classList.remove("show");
+
+    showRemainingBtn.style.display = "none";
+
+    remainingDemonsContainer.innerHTML = "";
+    remainingDemonsContainer.style.display = "block";
+    document.getElementById("remainingDemonsOutside").innerHTML = "";
+
+    generateCard();
+  }
+};
+
+
+  saveBtn.onclick = () => { alert("Save feature not implemented."); };
+function showFinalCard(level) {
+  const card = document.getElementById("finalResultCard");
+  card.querySelector('p:nth-of-type(1)').textContent = `Number of demons: ${used.length}`;
+  card.querySelector('p:nth-of-type(2)').textContent = `Highest percent: 100%`;
+
+  card.style.display = "block"; // Make visible before animation
+  card.classList.remove("show"); // reset animation if needed
+  void card.offsetWidth; // trigger reflow to restart animation
+  card.classList.add("show");
+
+  // 🚫 Do NOT show the blue button here
+  // showRemainingBtn.style.display = "inline-block"; <-- make sure this line is NOT here
+}
+const showRemainingBtn = document.getElementById("showRemainingBtn");
+const remainingDemonsContainer = document.getElementById("remainingDemonsContainer");
+
+showRemainingBtn.onclick = () => {
+  if (showRemainingBtn.disabled) return; // prevent double clicks
+  showRemainingBtn.disabled = true;
+
+  const outsideContainer = document.getElementById("remainingDemonsOutside");
+  outsideContainer.innerHTML = "";
+
+  // Hide the inside container to avoid confusion
+  remainingDemonsContainer.style.display = "none";
+
+  // Find remaining demons (keys not in used)
+  const allKeys = Object.keys(levels).map(Number);
+  const remainingKeys = allKeys.filter(k => !used.includes(k));
+
+  if (remainingKeys.length === 0) {
+    outsideContainer.textContent = "No remaining demons!";
+    showRemainingBtn.style.display = "none";
+    return;
+  }
+
+  // Shuffle function (Fisher-Yates)
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
     }
-    // Add more levels here...
-  };
+    return array;
+  }
 
-  function generateCard() {
-    let keys = Object.keys(levels).map(n => parseInt(n));
-    let available = keys.filter(k => !used.includes(k));
-    if (available.length === 0) {
-      alert("No more levels available to generate.");
-      return;
-    }
+  // Shuffle the remaining demons to randomize order
+  shuffle(remainingKeys);
 
-    let pick = available[Math.floor(Math.random() * available.length)];
-    used.push(pick);
-
-    const level = levels[pick];
-    const container = document.getElementById("cardContainer");
-
+  // For each remaining demon, create a simple card (reuse createCard but without controls)
+  remainingKeys.forEach(key => {
+    const level = levels[key];
     const card = document.createElement("div");
     card.className = "card";
-
     const img = document.createElement("img");
     img.src = level.img;
-    img.alt = `Thumbnail for ${level.title}`;
     card.appendChild(img);
-
     const info = document.createElement("div");
     info.className = "card-info";
-
-    const copyIcon = document.createElement("span");
-    copyIcon.textContent = "📋";
-    copyIcon.title = "Copy level title";
-    copyIcon.className = "copy-icon";
-    copyIcon.onclick = () => {
-      navigator.clipboard.writeText(level.title).then(() => {
-        alert("Level title copied!");
-      });
-    };
-
-    const titleDiv = document.createElement("div");
-    titleDiv.className = "card-title";
-    titleDiv.appendChild(document.createTextNode(level.title));
-    titleDiv.appendChild(copyIcon);
-    info.appendChild(titleDiv);
-
-    const authorDiv = document.createElement("div");
-    authorDiv.className = "card-sub";
-    authorDiv.textContent = `by ${level.author}`;
-    info.appendChild(authorDiv);
-
+    const titleH2 = document.createElement("h2");
+    titleH2.textContent = level.title;
+    info.appendChild(titleH2);
+    const authorP = document.createElement("p");
+    authorP.textContent = `by ${level.author}`;
+    info.appendChild(authorP);
     card.appendChild(info);
 
-    const controls = document.createElement("div");
-    controls.className = "controls";
+    outsideContainer.appendChild(card);
+  });
+};
 
-    const input = document.createElement("input");
-    input.placeholder = "At least 1%";
 
-    const btnRow = document.createElement("div");
-    btnRow.className = "btn-row";
 
-    const done = document.createElement("button");
-    done.className = "done";
-    done.textContent = "Done";
-    done.onclick = () => {
-      const val = input.value.trim();
-      const num = parseFloat(val);
-
-      if (!val || isNaN(num) || num < 1) {
-        alert("Please enter a percentage of at least 1% before marking as done.");
-        return;
-      }
-
-      card.classList.add("done");
-      controls.classList.add("disabled");
-      input.disabled = true;
-      done.disabled = true;
-      giveup.disabled = true;
-    };
-
-    const giveup = document.createElement("button");
-    giveup.className = "giveup";
-    giveup.textContent = "Give up";
-    giveup.onclick = () => {
-      card.classList.add("failed");
-      controls.classList.add("disabled");
-      input.disabled = true;
-      done.disabled = true;
-      giveup.disabled = true;
-    };
-
-    btnRow.appendChild(done);
-    btnRow.appendChild(giveup);
-    controls.appendChild(input);
-    controls.appendChild(btnRow);
-
-    card.appendChild(controls);
-
-    container.appendChild(card);
-  }
-
-  function saveProgress() {
-    alert("Save functionality not implemented.");
-  }
-
-  function resetRoulette() {
-    const container = document.getElementById("cardContainer");
-    container.innerHTML = "";
-    used.length = 0;
-  }
 </script>
 </body>
 </html>
